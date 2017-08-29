@@ -2,7 +2,7 @@ import argparse
 import os
 import re
 
-def fix(directory):
+def fix(directory, recursive):
     for i in os.scandir(directory):
         if i.is_file():
             print(i.name, end=' ')
@@ -33,12 +33,19 @@ def fix(directory):
                     os.rename(i.path,
                               i.path.rstrip('.html').rstrip('.htm') + '.html')
             print()
+        elif i.is_dir():
+            print(i.name, 'directory')
+            if recursive:
+                print('Fixing subdir')
+                fix(i.path, recursive)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('directory', help='Directory to fix files in')
+    parser.add_argument('directory', help='Directory to fix files in.')
+    parser.add_argument('-r', '--recursive', action='store_true',
+                        help='Fix files recursivly.')
     args = parser.parse_args()
-    fix(args.directory) 
+    fix(args.directory, args.recursive) 
     
 
 if __name__ == '__main__':
